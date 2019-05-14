@@ -21,4 +21,4 @@ notes:
     }]` is what fixed it.
 
 2) For some reason I had to make many to many relation only to enable changing order in menu.
-To crete this use:https://github.com/strapi/strapi/issues/2166
+To make this work use:https://github.com/strapi/strapi/issues/2166
