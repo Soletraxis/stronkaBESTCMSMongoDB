@@ -1,0 +1,25 @@
+{
+  "connection": "default",
+  "collectionName": "menu",
+  "info": {
+    "name": "menu",
+    "description": ""
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "menu": {
+      "collection": "menu",
+      "via": "menus"
+    },
+    "menus": {
+      "collection": "menu",
+      "via": "menu",
+      "dominant": true
+    }
+  }
+}
