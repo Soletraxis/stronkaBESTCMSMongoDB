@@ -1,0 +1,28 @@
+{
+  "connection": "default",
+  "collectionName": "",
+  "info": {
+    "name": "page",
+    "description": ""
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "required": true,
+      "type": "string"
+    },
+    "alias": {
+      "unique": true,
+      "required": true,
+      "type": "string"
+    },
+    "html": {
+      "type": "text"
+    },
+    "options": {
+      "type": "json"
+    }
+  }
+}
