@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /* global Menu */
 
@@ -9,10 +9,11 @@
  */
 
 // Public dependencies.
-const _ = require("lodash");
-const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const _ = require('lodash');
+const { convertRestQueryParams, buildQuery } = require('strapi-utils');
 
 module.exports = {
+
   /**
    * Promise to fetch all menus.
    *
@@ -21,25 +22,14 @@ module.exports = {
 
   fetchAll: (params, populate) => {
     const filters = convertRestQueryParams(params);
-    const populateOpt = [{
-      path: "menus",
-      populate: {
-        path: "menus",
-        populate: {
-          path: "menus"
-        }
-      }
-    }, {
-      path: "menu",
-      populate: {
-        path: 'menu'
-      }
-    }]
+    const populateOpt = populate || Menu.associations
+      .filter(ast => ast.autoPopulate !== false)
+      .map(ast => ast.alias)
 
     return buildQuery({
       model: Menu,
       filters,
-      populate: populateOpt
+      populate: populateOpt,
     });
   },
 
@@ -49,16 +39,16 @@ module.exports = {
    * @return {Promise}
    */
 
-  fetch: params => {
+  fetch: (params) => {
     // Select field to populate.
     const populate = Menu.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
-      .join(" ");
+      .join(' ');
 
-    return Menu.findOne(_.pick(params, _.keys(Menu.schema.paths))).populate(
-      populate
-    );
+    return Menu
+      .findOne(_.pick(params, _.keys(Menu.schema.paths)))
+      .populate(populate);
   },
 
   /**
@@ -67,13 +57,14 @@ module.exports = {
    * @return {Promise}
    */
 
-  count: params => {
+  count: (params) => {
     const filters = convertRestQueryParams(params);
 
     return buildQuery({
       model: Menu,
-      filters: { where: filters.where }
-    }).count();
+      filters: { where: filters.where },
+    })
+      .count()
   },
 
   /**
@@ -82,7 +73,7 @@ module.exports = {
    * @return {Promise}
    */
 
-  add: async values => {
+  add: async (values) => {
     // Extract values related to relational data.
     const relations = _.pick(values, Menu.associations.map(ast => ast.alias));
     const data = _.omit(values, Menu.associations.map(ast => ast.alias));
@@ -123,11 +114,13 @@ module.exports = {
     const populate = Menu.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
-      .join(" ");
+      .join(' ');
 
     // Note: To get the full response of Mongo, use the `remove()` method
     // or add spent the parameter `{ passRawResult: true }` as second argument.
-    const data = await Menu.findOneAndRemove(params, {}).populate(populate);
+    const data = await Menu
+      .findOneAndRemove(params, {})
+      .populate(populate);
 
     if (!data) {
       return data;
@@ -139,23 +132,13 @@ module.exports = {
           return true;
         }
 
-        const search =
-          _.endsWith(association.nature, "One") ||
-          association.nature === "oneToMany"
-            ? { [association.via]: data._id }
-            : { [association.via]: { $in: [data._id] } };
-        const update =
-          _.endsWith(association.nature, "One") ||
-          association.nature === "oneToMany"
-            ? { [association.via]: null }
-            : { $pull: { [association.via]: data._id } };
+        const search = _.endsWith(association.nature, 'One') || association.nature === 'oneToMany' ? { [association.via]: data._id } : { [association.via]: { $in: [data._id] } };
+        const update = _.endsWith(association.nature, 'One') || association.nature === 'oneToMany' ? { [association.via]: null } : { $pull: { [association.via]: data._id } };
 
         // Retrieve model.
-        const model = association.plugin
-          ? strapi.plugins[association.plugin].models[
-              association.model || association.collection
-            ]
-          : strapi.models[association.model || association.collection];
+        const model = association.plugin ?
+          strapi.plugins[association.plugin].models[association.model || association.collection] :
+          strapi.models[association.model || association.collection];
 
         return model.update(search, update, { multi: true });
       })
@@ -170,32 +153,32 @@ module.exports = {
    * @return {Promise}
    */
 
-  search: async params => {
+  search: async (params) => {
     // Convert `params` object to filters compatible with Mongo.
-    const filters = strapi.utils.models.convertParams("menu", params);
+    const filters = strapi.utils.models.convertParams('menu', params);
     // Select field to populate.
     const populate = Menu.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
-      .join(" ");
+      .join(' ');
 
     const $or = Object.keys(Menu.attributes).reduce((acc, curr) => {
       switch (Menu.attributes[curr].type) {
-        case "integer":
-        case "float":
-        case "decimal":
+        case 'integer':
+        case 'float':
+        case 'decimal':
           if (!_.isNaN(_.toNumber(params._q))) {
             return acc.concat({ [curr]: params._q });
           }
 
           return acc;
-        case "string":
-        case "text":
-        case "password":
-          return acc.concat({ [curr]: { $regex: params._q, $options: "i" } });
-        case "boolean":
-          if (params._q === "true" || params._q === "false") {
-            return acc.concat({ [curr]: params._q === "true" });
+        case 'string':
+        case 'text':
+        case 'password':
+          return acc.concat({ [curr]: { $regex: params._q, $options: 'i' } });
+        case 'boolean':
+          if (params._q === 'true' || params._q === 'false') {
+            return acc.concat({ [curr]: params._q === 'true' });
           }
 
           return acc;
@@ -204,7 +187,8 @@ module.exports = {
       }
     }, []);
 
-    return Menu.find({ $or })
+    return Menu
+      .find({ $or })
       .sort(filters.sort)
       .skip(filters.start)
       .limit(filters.limit)
