@@ -27,17 +27,17 @@
     "linkTo": {
       "type": "string"
     },
-    "parent": {
-      "collection": "menu",
-      "via": "child",
-      "dominant": true
-    },
-    "child": {
-      "collection": "menu",
-      "via": "parent"
-    },
     "guarded": {
       "type": "boolean"
+    },
+    "children": {
+      "collection": "menu",
+      "via": "parents",
+      "dominant": true
+    },
+    "parents": {
+      "collection": "menu",
+      "via": "children"
     }
   }
 }
