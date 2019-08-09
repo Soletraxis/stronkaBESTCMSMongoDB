@@ -10,16 +10,34 @@
   },
   "attributes": {
     "name": {
+      "required": true,
       "type": "string"
     },
-    "menu": {
-      "collection": "menu",
-      "via": "menus"
+    "type": {
+      "required": true,
+      "enum": [
+        "static",
+        "internal",
+        "external",
+        "root"
+      ],
+      "default": "static",
+      "type": "enumeration"
     },
-    "menus": {
+    "linkTo": {
+      "type": "string"
+    },
+    "guarded": {
+      "type": "boolean"
+    },
+    "children": {
       "collection": "menu",
-      "via": "menu",
+      "via": "parents",
       "dominant": true
+    },
+    "parents": {
+      "collection": "menu",
+      "via": "children"
     }
   }
 }
